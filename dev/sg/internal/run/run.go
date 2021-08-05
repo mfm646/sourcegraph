@@ -52,7 +52,6 @@ func Commands(ctx context.Context, globalEnv map[string]string, cmds ...Command)
 			if err := runWatch(ctx, cmd, root, globalEnv, ch); err != nil {
 				if err != ctx.Err() {
 					failures <- failedRun{cmdName: cmd.Name, err: err}
-					cancel()
 				}
 			}
 		}(cmd, chs[i])
@@ -173,9 +172,11 @@ func runWatch(ctx context.Context, cmd Command, root string, globalEnv map[strin
 	var cancelFuncs []context.CancelFunc
 
 	errs := make(chan error, 1)
+	completed := make(chan bool, 1)
 	defer func() {
 		wg.Wait()
 		close(errs)
+		close(completed)
 	}()
 
 	for {
@@ -218,10 +219,12 @@ func runWatch(ctx context.Context, cmd Command, root string, globalEnv map[strin
 
 		if cmd.CheckBinary == "" || md5changed {
 			for _, cancel := range cancelFuncs {
-				cancel() // Stop command
-				<-errs   // Wait for exit
+				cancel()    // Stop command
+				<-completed // Wait for exit
 			}
 			cancelFuncs = nil
+			close(completed)
+			completed = make(chan bool, 1)
 
 			// Run it
 			stdout.Out.WriteLine(output.Linef("", output.StylePending, "Running %s...", cmd.Name))
@@ -250,8 +253,12 @@ func runWatch(ctx context.Context, cmd Command, root string, globalEnv map[strin
 						stdout:   sc.CapturedStdout(),
 					}
 				}
-
-				errs <- err
+				if err == nil && cmd.ContinueWatchOnExit {
+					stdout.Out.WriteLine(output.Linef("", output.StyleSuccess, "Command %s completed", cmd.Name))
+				} else {
+					errs <- err
+				}
+				completed <- true
 			}()
 
 			// TODO: We should probably only set this after N seconds (or when
@@ -264,7 +271,6 @@ func runWatch(ctx context.Context, cmd Command, root string, globalEnv map[strin
 		select {
 		case <-reload:
 			stdout.Out.WriteLine(output.Linef("", output.StylePending, "Change detected. Reloading %s...", cmd.Name))
-
 			continue // Reinstall
 
 		case err := <-errs:

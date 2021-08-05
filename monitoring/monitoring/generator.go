@@ -76,15 +76,15 @@ func Generate(logger log15.Logger, opts GenerateOptions, containers ...*Containe
 				crlog.Debug("Reloading Grafana instance")
 				client, err := sdk.NewClient(localGrafanaURL, localGrafanaCredentials, sdk.DefaultHTTPClient)
 				if err != nil {
-					crlog.Crit("Failed to initialize Grafana client", "error", err)
+					crlog.Error("Failed to initialize Grafana client", "error", err)
 					return err
 				}
 				_, err = client.SetDashboard(context.Background(), *board, sdk.SetDashboardParams{Overwrite: true})
 				if err != nil {
-					crlog.Crit("Could not reload Grafana instance", "error", err)
-					return err
+					crlog.Error("Could not reload Grafana instance", "error", err)
+				} else {
+					crlog.Info("Reloaded Grafana instance")
 				}
-				crlog.Info("Reloaded Grafana instance")
 			}
 		}
 
@@ -118,15 +118,15 @@ func Generate(logger log15.Logger, opts GenerateOptions, containers ...*Containe
 		rlog.Debug("Reloading Prometheus instance", "instance", localPrometheusURL)
 		resp, err := http.Post(localPrometheusURL+"/-/reload", "", nil)
 		if err != nil {
-			rlog.Crit("Could not reload Prometheus", "error", err)
-			return err
+			rlog.Error("Could not reload Prometheus", "error", err)
+		} else {
+			defer resp.Body.Close()
+			if resp.StatusCode != 200 {
+				rlog.Crit("Unexpected status code while reloading Prometheus rules", "code", resp.StatusCode)
+				return err
+			}
+			rlog.Info("Reloaded Prometheus instance")
 		}
-		defer resp.Body.Close()
-		if resp.StatusCode != 200 {
-			rlog.Crit("Unexpected status code while reloading Prometheus rules", "code", resp.StatusCode)
-			return err
-		}
-		rlog.Info("Reloaded Prometheus instance")
 	}
 
 	// Generate documentation

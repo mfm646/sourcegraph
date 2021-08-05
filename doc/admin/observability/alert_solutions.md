@@ -3912,11 +3912,11 @@ with your code hosts connections or networking issues affecting communication wi
 
 ## symbols: store_fetch_failures
 
-<p class="subtitle">store fetch failures every 5m</p>
+<p class="subtitle">store  failures every 5m</p>
 
 **Descriptions**
 
-- <span class="badge badge-warning">warning</span> symbols: 5+ store fetch failures every 5m
+- <span class="badge badge-warning">warning</span> symbols: 5+ store  failures every 5m
 
 **Possible solutions**
 

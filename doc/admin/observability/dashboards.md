@@ -4240,7 +4240,7 @@ This panel indicates percentage pods available.
 
 #### symbols: store_fetch_failures
 
-This panel indicates store fetch failures every 5m.
+This panel indicates store  failures every 5m.
 
 > NOTE: Alerts related to this panel are documented in the [alert solutions reference](./alert_solutions.md#symbols-store-fetch-failures).
 
