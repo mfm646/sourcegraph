@@ -34,8 +34,7 @@ func init() {
 		Tracer:     &trace.Tracer{Tracer: opentracing.GlobalTracer()},
 		Registerer: prometheus.DefaultRegisterer,
 	}
-	metrics := NewOperationsMetrics(observationContext)
-	operations = NewOperationsFromMetrics(observationContext, metrics)
+	operations = NewOperationsFromMetrics(observationContext)
 }
 
 func FetchSources(ctx context.Context, config *schema.JVMPackagesConnection, dependency reposource.MavenDependency) (_ []string, err error) {

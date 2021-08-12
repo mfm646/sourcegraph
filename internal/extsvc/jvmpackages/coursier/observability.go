@@ -2,6 +2,7 @@ package coursier
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/sourcegraph/sourcegraph/internal/metrics"
 	"github.com/sourcegraph/sourcegraph/internal/observation"
@@ -14,21 +15,25 @@ type Operations struct {
 	runCommand    *observation.Operation
 }
 
-func NewOperationsMetrics(observationContext *observation.Context) *metrics.OperationMetrics {
-	return metrics.NewOperationMetrics(
+func NewOperationsFromMetrics(observationContext *observation.Context) *Operations {
+	metrics := metrics.NewOperationMetrics(
 		observationContext.Registerer,
 		"codeintel_coursier",
 		metrics.WithLabels("op"),
 		metrics.WithCountHelp("Total number of method invocations."),
 	)
-}
 
-func NewOperationsFromMetrics(observationContext *observation.Context, metrics *metrics.OperationMetrics) *Operations {
 	op := func(name string) *observation.Operation {
 		return observationContext.Operation(observation.Op{
-			Name:         fmt.Sprintf("codeintel.coursier.%s", name),
-			MetricLabels: []string{name},
-			Metrics:      metrics,
+			Name:              fmt.Sprintf("codeintel.coursier.%s", name),
+			MetricLabelValues: []string{name},
+			Metrics:           metrics,
+			ErrorFilter: func(err error) observation.ErrorFilterBehaviour {
+				if strings.Contains(err.Error(), "not found") {
+					return observation.EmitForMetrics | observation.EmitForTraces
+				}
+				return observation.EmitForAll
+			},
 		})
 	}
 
