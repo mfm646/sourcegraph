@@ -318,6 +318,7 @@ func GitServer() *monitoring.Container {
 			shared.NewProvisioningIndicatorsGroup(containerName, monitoring.ObservableOwnerCoreApplication, provisioningIndicatorsOptions),
 			shared.NewGolangMonitoringGroup(containerName, monitoring.ObservableOwnerCoreApplication, nil),
 			shared.NewKubernetesMonitoringGroup(containerName, monitoring.ObservableOwnerCoreApplication, nil),
+			shared.CodeIntelligence.NewCoursierGroup(containerName),
 		},
 	}
 }
