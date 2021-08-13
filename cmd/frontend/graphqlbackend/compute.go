@@ -152,7 +152,8 @@ func toComputeMatchContextResolver(fm *result.FileMatch, mc *compute.MatchContex
 
 	var computeMatches []*computeMatchResolver
 	for _, m := range mc.Matches {
-		computeMatches = append(computeMatches, &computeMatchResolver{m: &m})
+		mCopy := m
+		computeMatches = append(computeMatches, &computeMatchResolver{m: &mCopy})
 	}
 	return &computeMatchContextResolver{
 		repository: getRepoResolver(fm.Repo, ""),
