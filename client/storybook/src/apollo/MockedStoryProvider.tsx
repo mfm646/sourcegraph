@@ -3,6 +3,8 @@ import { MockedProvider, MockedProviderProps, MockedResponse, MockLink } from '@
 import { getOperationName } from '@apollo/client/utilities'
 import React from 'react'
 
+import { cache } from '@sourcegraph/shared/src/graphql/cache'
+
 /**
  * Intercept each mocked Apollo request and ensure that any request variables match the specified mock.
  * This effectively means we are mocking agains the operationName of the query being fired.
@@ -30,6 +32,7 @@ export const MockedStoryProvider: React.FunctionComponent<MockedProviderProps> =
     ...props
 }) => (
     <MockedProvider
+        cache={cache}
         mocks={mocks}
         link={ApolloLink.from([forceMockVariablesLink(mocks), new MockLink(mocks)])}
         {...props}

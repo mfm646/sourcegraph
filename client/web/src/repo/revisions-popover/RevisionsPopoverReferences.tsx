@@ -148,6 +148,8 @@ export const RevisionReferencesTab: React.FunctionComponent<RevisionReferencesTa
         },
     })
 
+    console.log('Got response for type', type)
+
     const summary = response.connection && (
         <ConnectionSummary
             emptyElement={allowSpeculativeSearch ? <></> : undefined}

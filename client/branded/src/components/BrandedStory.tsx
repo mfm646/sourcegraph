@@ -1,7 +1,9 @@
+import { MockedResponse } from '@apollo/client/testing'
 import React from 'react'
 import { MemoryRouter, MemoryRouterProps } from 'react-router'
 
 import { ThemeProps } from '@sourcegraph/shared/src/theme'
+import { MockedStoryProvider } from '@sourcegraph/storybook/src/apollo/MockedStoryProvider'
 import { usePrependStyles } from '@sourcegraph/storybook/src/hooks/usePrependStyles'
 import { useTheme } from '@sourcegraph/storybook/src/hooks/useTheme'
 
@@ -12,6 +14,7 @@ import { Tooltip } from './tooltip/Tooltip'
 export interface BrandedProps extends MemoryRouterProps {
     children: React.FunctionComponent<ThemeProps>
     styles?: string
+    mocks?: readonly MockedResponse[]
 }
 
 /**
@@ -21,15 +24,18 @@ export interface BrandedProps extends MemoryRouterProps {
 export const BrandedStory: React.FunctionComponent<BrandedProps> = ({
     children: Children,
     styles = brandedStyles,
+    mocks,
     ...memoryRouterProps
 }) => {
     const isLightTheme = useTheme()
     usePrependStyles('branded-story-styles', styles)
 
     return (
-        <MemoryRouter {...memoryRouterProps}>
-            <Tooltip />
-            <Children isLightTheme={isLightTheme} />
-        </MemoryRouter>
+        <MockedStoryProvider mocks={mocks}>
+            <MemoryRouter {...memoryRouterProps}>
+                <Tooltip />
+                <Children isLightTheme={isLightTheme} />
+            </MemoryRouter>
+        </MockedStoryProvider>
     )
 }
