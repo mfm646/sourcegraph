@@ -384,7 +384,7 @@
     "recharts": "^1.8.5",
     "regexpp": "^3.1.0",
     "rxjs": "^6.6.3",
-    "sanitize-html": "^2.0.0",
+    "sanitize-html": "^2.7.1",
     "semver": "^7.3.2",
     "shepherd.js": "^8.0.2",
     "string-score": "^1.0.1",
