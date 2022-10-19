@@ -360,7 +360,7 @@
     "lodash": "^4.17.20",
     "marked": "^2.0.3",
     "mdi-react": "^7.3.0",
-    "minimatch": "^3.0.4",
+    "minimatch": "^3.0.5",
     "monaco-editor": "^0.24.0",
     "nice-ticks": "^1.0.1",
     "open-color": "^1.8.0",
